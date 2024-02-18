@@ -61,7 +61,7 @@ export const createContact = async (req, res, next) => {
     }
     const newContact = { id: crypto.randomUUID(), ...value };
     await addContact(newContact);
-    res.send(newContact);
+    res.status(201).send(newContact);
   } catch (error) {
     error.status = 400;
     next(error);
@@ -80,7 +80,7 @@ export const updateContact = async (req, res, next) => {
     }
     await updateContacts(id, value);
     const updatedContact = await getContactById(id);
-    res.status(201).send(updatedContact);
+    res.status(200).send(updatedContact);
   } catch (error) {
     error.status = 400;
     next(error);
