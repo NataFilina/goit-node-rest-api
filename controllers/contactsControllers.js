@@ -10,6 +10,7 @@ import {
   createContactSchema,
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
+
 export const getAllContacts = async (req, res, next) => {
   try {
     const contacts = await listContacts();
@@ -50,12 +51,7 @@ export const deleteContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   try {
-    const contact = {
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-    };
-    const { error, value } = createContactSchema.validate(contact);
+    const { error, value } = createContactSchema.validate(req.body);
     if (error) {
       throw new Error(error.message);
     }
