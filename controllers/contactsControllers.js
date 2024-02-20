@@ -6,10 +6,7 @@ import {
   addContact,
   updateContacts,
 } from "../services/contactsServices.js";
-import {
-  createContactSchema,
-  updateContactSchema,
-} from "../schemas/contactsSchemas.js";
+import HttpError from "../helpers/HttpError.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
@@ -49,36 +46,23 @@ export const deleteContact = async (req, res, next) => {
   }
 };
 
-export const createContact = async (req, res, next) => {
-  try {
-    const { error, value } = createContactSchema.validate(req.body);
-    if (error) {
-      throw new Error(error.message);
-    }
-    const newContact = { id: crypto.randomUUID(), ...value };
-    await addContact(newContact);
-    res.status(201).send(newContact);
-  } catch (error) {
-    error.status = 400;
-    next(error);
-  }
+export const createContact = async (req, res) => {
+  const newContact = { id: crypto.randomUUID(), ...req.body };
+  await addContact(newContact);
+  res.status(201).send(newContact);
 };
 
 export const updateContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    if (Object.keys(req.body).length <= 0) {
-      throw new Error("Body must have at least one field");
+    const contact = await getContactById(id);
+    if (!contact) {
+      throw HttpError(404, "Not found");
     }
-    const { error, value } = updateContactSchema.validate(req.body);
-    if (error) {
-      throw new Error(error.message);
-    }
-    await updateContacts(id, value);
+    await updateContacts(id, req.body);
     const updatedContact = await getContactById(id);
     res.status(200).send(updatedContact);
   } catch (error) {
-    error.status = 400;
     next(error);
   }
 };

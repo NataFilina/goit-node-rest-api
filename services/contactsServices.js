@@ -41,9 +41,6 @@ export async function addContact(newContact) {
 export async function updateContacts(contactId, body) {
   const contacts = await readContacts();
   const index = contacts.findIndex((contact) => contact.id === contactId);
-  if (index === -1) {
-    throw new Error("Not found");
-  }
   const updatedContact = { ...contacts[index], ...body };
   contacts[index] = updatedContact;
   await writeContacts(contacts);
