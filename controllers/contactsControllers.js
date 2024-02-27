@@ -13,7 +13,7 @@ export const getAllContacts = async (req, res, next) => {
     const contacts = await listContacts();
     res.send(contacts);
   } catch (error) {
-    next(HttpError(400, "Bad Request"));
+    next(HttpError(500, "Internal server error"));
   }
 };
 
@@ -26,7 +26,7 @@ export const getOneContact = async (req, res, next) => {
     }
     res.send(contact);
   } catch (error) {
-    next(HttpError(404, "Not found"));
+    next(error);
   }
 };
 
@@ -40,7 +40,7 @@ export const deleteContact = async (req, res, next) => {
     await removeContact(id);
     res.send(contact);
   } catch (error) {
-    next(HttpError(404, "Not found"));
+    next(error);
   }
 };
 
@@ -60,7 +60,7 @@ export const updateContact = async (req, res, next) => {
     const updatedContact = await updateContacts(id, req.body);
     res.status(200).send(updatedContact);
   } catch (error) {
-    next(HttpError(404, "Not found"));
+    next(error);
   }
 };
 
@@ -74,6 +74,6 @@ export const updateContactFavorite = async (req, res, next) => {
     const updatedContact = await updateStatusContact(id, req.body);
     res.status(200).send(updatedContact);
   } catch (error) {
-    next(HttpError(404, "Not found"));
+    next(error);
   }
 };
