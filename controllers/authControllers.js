@@ -28,8 +28,7 @@ export const register = async (req, res, next) => {
       subscription,
     };
 
-    await createNewUser(newUser);
-    const createdNewUser = await findUser({ email: normalizedEmail });
+    const createdNewUser = await createNewUser(newUser);
 
     res.status(201).send({
       user: {
@@ -104,14 +103,14 @@ export const currentUser = async (req, res, next) => {
 
 export const updateUserSubscription = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      throw HttpError(401, "Not authorized");
-    }
-    const token = authHeader.split(" ")[1];
-    const user = await findUser({ token });
-    const updatedUser = await updateSubscription(user._id, req.body);
-    res.status(200).send(updatedUser);
+    const updatedUser = await updateSubscription(req.user._id, req.body);
+    res.status(200).send({
+      token: updatedUser.token,
+      user: {
+        email: updatedUser.email,
+        subscription: updatedUser.subscription,
+      },
+    });
   } catch (error) {
     next(error);
   }

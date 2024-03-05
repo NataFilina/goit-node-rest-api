@@ -5,7 +5,7 @@ export const createUserSchema = Joi.object({
   email: Joi.string()
     .required()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } }),
-  subscription: Joi.string(),
+  subscription: Joi.string().valid("starter", "pro", "business"),
 });
 
 export const loginUserSchema = Joi.object({
@@ -16,5 +16,5 @@ export const loginUserSchema = Joi.object({
 });
 
 export const updateUserSubscriptionSchema = Joi.object({
-  subscription: Joi.string().required(),
+  subscription: Joi.string().required().valid("starter", "pro", "business"),
 });

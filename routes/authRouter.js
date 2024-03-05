@@ -23,7 +23,7 @@ authRouter.get("/current", auth, currentUser);
 authRouter.patch(
   "/",
   validateBody(updateUserSubscriptionSchema),
-
+  auth,
   updateUserSubscription
 );
 
