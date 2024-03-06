@@ -28,12 +28,9 @@ export const getAllContacts = async (req, res, next) => {
 export const getOneContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const contact = await getContactById(id);
+    const contact = await getContactById(id, req.user._id);
     if (!contact) {
       throw HttpError(404, "Not found");
-    }
-    if (contact.owner.toString() !== req.user._id.toString()) {
-      throw HttpError(404, "Contact not found");
     }
     res.send(contact);
   } catch (error) {
@@ -44,14 +41,11 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const contact = await getContactById(id);
+    const contact = await getContactById(id, req.user._id);
     if (!contact) {
       throw HttpError(404, "Not found");
     }
-    if (contact.owner.toString() !== req.user._id.toString()) {
-      throw HttpError(404, "Contact not found");
-    }
-    await removeContact(id);
+    await removeContact(id, req.user._id);
     res.send(contact);
   } catch (error) {
     next(error);
@@ -67,12 +61,9 @@ export const createContact = async (req, res) => {
 export const updateContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const contact = await getContactById(id);
+    const contact = await getContactById(id, req.user._id);
     if (!contact) {
       throw HttpError(404, "Not found");
-    }
-    if (contact.owner.toString() !== req.user._id.toString()) {
-      throw HttpError(404, "Contact not found");
     }
     const updatedContact = await updateContacts(id, req.body);
     res.status(200).send(updatedContact);
@@ -84,12 +75,9 @@ export const updateContact = async (req, res, next) => {
 export const updateContactFavorite = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const contact = await getContactById(id);
+    const contact = await getContactById(id, req.user._id);
     if (!contact) {
       throw HttpError(404, "Not found");
-    }
-    if (contact.owner.toString() !== req.user._id.toString()) {
-      throw HttpError(404, "Contact not found");
     }
     const updatedContact = await updateStatusContact(id, req.body);
     res.status(200).send(updatedContact);

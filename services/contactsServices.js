@@ -21,13 +21,13 @@ export async function favoriteContacts(owner) {
   return data;
 }
 
-export async function getContactById(contactId) {
-  const contact = await Contact.findById(contactId);
+export async function getContactById(_id, owner) {
+  const contact = await Contact.findOne({ _id, owner });
   return contact;
 }
 
-export async function removeContact(contactId) {
-  await Contact.findByIdAndDelete(contactId);
+export async function removeContact(_id, owner) {
+  await Contact.findOneAndDelete({ _id, owner });
 }
 
 export async function addContact(newContact) {
@@ -36,7 +36,7 @@ export async function addContact(newContact) {
 }
 
 export async function updateContacts(contactId, body) {
-  const contact = await Contact.findByIdAndUpdate(contactId, body, {
+  const contact = await Contact.findOneAndUpdate({ _id: contactId }, body, {
     new: true,
   });
   return contact;

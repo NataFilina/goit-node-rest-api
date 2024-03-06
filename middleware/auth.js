@@ -8,7 +8,6 @@ export async function auth(req, res, next) {
     if (!token) {
       throw HttpError(401, "Not authorized");
     }
-    // const token = authHeader.split(" ")[1];
 
     jwt.verify(token, process.env.JWT_SECRET, async (error, decode) => {
       if (error) {
