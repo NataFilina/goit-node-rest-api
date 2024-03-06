@@ -43,7 +43,7 @@ export async function updateContacts(contactId, body) {
 }
 
 export async function updateStatusContact(contactId, body) {
-  const contact = await Contact.findByIdAndUpdate(contactId, body, {
+  const contact = await Contact.findOneAndUpdate({ _id: contactId }, body, {
     new: true,
   });
   return contact;
