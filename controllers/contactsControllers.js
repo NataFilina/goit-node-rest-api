@@ -10,14 +10,15 @@ import {
 import HttpError from "../helpers/HttpError.js";
 
 export const getAllContacts = async (req, res, next) => {
-  const page = req.query.page;
-  const limit = req.query.limit;
-  const favorite = req.query.favorite;
+  const page = req.query?.page;
+  const limit = req.query?.limit;
+  const favorite = req.query?.favorite;
+  let contacts;
   try {
-    let contacts = await listContacts(req.user._id, page, limit);
-
     if (favorite) {
-      contacts = await favoriteContacts(req.user._id);
+      contacts = await favoriteContacts(req.user._id, page, limit);
+    } else {
+      contacts = await listContacts(req.user._id, page, limit);
     }
     res.send(contacts);
   } catch (error) {

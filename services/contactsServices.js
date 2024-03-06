@@ -16,9 +16,21 @@ export async function listContacts(owner, page = 1, limit = 20) {
   return data;
 }
 
-export async function favoriteContacts(owner) {
-  const data = await Contact.find({ owner, favorite: true });
+export async function favoriteContacts(owner, page = 1, limit = 20) {
+  const options = {
+    page: page,
+    limit: limit,
+  };
+  const data = await Contact.paginate(
+    { owner, favorite: true },
+    options,
+    function (err, result) {
+      return result.docs;
+    }
+  );
   return data;
+  // find({ owner, favorite: true });
+  // return data;
 }
 
 export async function getContactById(_id, owner) {
