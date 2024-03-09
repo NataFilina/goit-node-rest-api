@@ -26,3 +26,10 @@ export async function updateSubscription(contactId, body) {
   });
   return user;
 }
+
+export async function uploadUserAvatar(contactId, body) {
+  const user = await User.findByIdAndUpdate(contactId, body, {
+    new: true,
+  });
+  return user;
+}

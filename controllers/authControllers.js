@@ -1,13 +1,18 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import {
   createNewUser,
   findUser,
   loginUser,
   logoutUser,
   updateSubscription,
+  uploadUserAvatar,
 } from "../services/authServices.js";
 import HttpError from "../helpers/HttpError.js";
+import { helperUpload } from "../helpers/helperUpload.js";
 
 export const register = async (req, res, next) => {
   const { password, subscription, email } = req.body;
@@ -21,11 +26,17 @@ export const register = async (req, res, next) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+    const avatar = gravatar.url(email, {
+      s: "200",
+      r: "pg",
+      d: "mp",
+    });
 
     const newUser = {
       password: passwordHash,
       email: normalizedEmail,
       subscription,
+      avatarURL: avatar,
     };
 
     const createdNewUser = await createNewUser(newUser);
@@ -34,6 +45,7 @@ export const register = async (req, res, next) => {
       user: {
         email: normalizedEmail,
         subscription: createdNewUser.subscription,
+        avatarURL: createdNewUser.avatarURL,
       },
     });
   } catch (error) {
@@ -110,6 +122,27 @@ export const updateUserSubscription = async (req, res, next) => {
         email: updatedUser.email,
         subscription: updatedUser.subscription,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadAvatar = async (req, res, next) => {
+  try {
+    await helperUpload(req.file.path);
+
+    await fs.rename(
+      req.file.path,
+      path.join(process.cwd(), "public/avatars", req.file.filename)
+    );
+
+    const uploadedAvatar = await uploadUserAvatar(req.user._id, {
+      avatarURL: `${/avatars/}${req.file.filename}`,
+    });
+
+    res.status(200).send({
+      avatarURL: uploadedAvatar.avatarURL,
     });
   } catch (error) {
     next(error);
