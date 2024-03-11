@@ -5,6 +5,5 @@ node_modules/
 .DS_Store
 tmp/*
 !tmp/.gitkeep
-public/*
-!public/.gitkeep
-!public/avatars/.gitkeep
+public/**/*
+!public/**/.gitkeep
