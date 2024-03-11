@@ -1,12 +1,9 @@
 import mongoose from "mongoose";
 
-let DB_URI = process.env.DB_URI;
+const DB_TEST_URI = process.env.DB_TEST_URI;
 
-if (process.env.NODE_ENV === "test") {
-  DB_URI = process.env.DB_TEST_URI;
-}
 mongoose
-  .connect(DB_URI)
+  .connect(DB_TEST_URI)
   .then(() => {
     console.log("Database connection successful");
   })

@@ -6,10 +6,8 @@ import * as path from "node:path";
 import {
   createNewUser,
   findUser,
-  loginUser,
-  logoutUser,
-  updateSubscription,
-  uploadUserAvatar,
+  logUser,
+  updateUser,
 } from "../services/authServices.js";
 import HttpError from "../helpers/HttpError.js";
 import { helperUpload } from "../helpers/helperUpload.js";
@@ -72,7 +70,7 @@ export const login = async (req, res, next) => {
       expiresIn: "1h",
     });
 
-    await loginUser(user._id, { token });
+    await logUser(user._id, { token });
 
     res.status(200).send({
       token: token,
@@ -88,7 +86,7 @@ export const login = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    await logoutUser(req.user._id, { token: null });
+    await logUser(req.user._id, { token: null });
     res.status(204).end();
   } catch (error) {
     next(error);
@@ -115,7 +113,8 @@ export const currentUser = async (req, res, next) => {
 
 export const updateUserSubscription = async (req, res, next) => {
   try {
-    const updatedUser = await updateSubscription(req.user._id, req.body);
+    const updatedUser = await updateUser(req.user._id, req.body);
+
     res.status(200).send({
       token: updatedUser.token,
       user: {
@@ -137,8 +136,8 @@ export const uploadAvatar = async (req, res, next) => {
       path.join(process.cwd(), "public/avatars", req.file.filename)
     );
 
-    const uploadedAvatar = await uploadUserAvatar(req.user._id, {
-      avatarURL: `${/avatars/}${req.file.filename}`,
+    const uploadedAvatar = await updateUser(req.user._id, {
+      avatarURL: `/avatars/${req.file.filename}`,
     });
 
     res.status(200).send({
