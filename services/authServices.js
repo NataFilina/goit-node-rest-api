@@ -10,17 +10,11 @@ export async function createNewUser(newUser) {
   return createdUser;
 }
 
-export async function loginUser(id, token) {
-  const logUser = await User.findByIdAndUpdate(id, token);
-  return logUser;
+export async function logUser(id, token) {
+  const user = await User.findByIdAndUpdate(id, token);
+  return user;
 }
-
-export async function logoutUser(id, token) {
-  const outUser = await User.findByIdAndUpdate(id, token);
-  return outUser;
-}
-
-export async function updateSubscription(contactId, body) {
+export async function updateUser(contactId, body) {
   const user = await User.findByIdAndUpdate(contactId, body, {
     new: true,
   });
