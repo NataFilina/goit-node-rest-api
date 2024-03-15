@@ -19,6 +19,9 @@ export async function auth(req, res, next) {
         if (!user || token !== user.token) {
           throw HttpError(401, "Not authorized");
         }
+        if (!user.verify) {
+          throw HttpError(401, "Not authorized");
+        }
         req.user = user;
         next();
       } catch (error) {

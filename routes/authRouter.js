@@ -6,6 +6,8 @@ import {
   currentUser,
   updateUserSubscription,
   uploadAvatar,
+  verify,
+  resendVerify,
 } from "../controllers/authControllers.js";
 import validateBody from "../helpers/validateBody.js";
 import {
@@ -29,5 +31,7 @@ authRouter.patch(
   updateUserSubscription
 );
 authRouter.patch("/avatars", upload.single("avatar"), auth, uploadAvatar);
+authRouter.get("/verify/:verificationToken", verify);
+authRouter.post("/verify/", resendVerify);
 
 export default authRouter;
