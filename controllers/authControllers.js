@@ -4,7 +4,6 @@ import gravatar from "gravatar";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import crypto from "node:crypto";
-import nodemailer from "nodemailer";
 import {
   createNewUser,
   findUser,
@@ -13,15 +12,7 @@ import {
 } from "../services/authServices.js";
 import HttpError from "../helpers/HttpError.js";
 import { helperUpload } from "../helpers/helperUpload.js";
-
-const transport = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
-  auth: {
-    user: process.env.MAILTRAP_USER,
-    pass: process.env.MAILTRAP_PASSWORD,
-  },
-});
+import { transport } from "../helpers/transportEmail.js";
 
 export const register = async (req, res, next) => {
   const { password, subscription, email } = req.body;
@@ -43,13 +34,15 @@ export const register = async (req, res, next) => {
     });
     const verificationToken = crypto.randomUUID();
 
-    await transport.sendMail({
+    const message = {
       to: normalizedEmail,
-      from: "filinanatash@gmail.com",
+      from: process.env.MAILTRAP_EMAIL,
       subject: "Welcome to Contacts Book",
       html: `To confirm your registration click on the <a href="http://localhost:3000/api/users/verify/${verificationToken}">link</a>`,
       text: `To confirm your registration, please open the link http://localhost:3000/api/users/verify/${verificationToken}`,
-    });
+    };
+
+    await transport.sendMail(message);
 
     const newUser = {
       password: passwordHash,
@@ -97,13 +90,14 @@ export const resendVerify = async (req, res, next) => {
     if (user.verify) {
       throw HttpError(400, "Verification has already been passed");
     }
-    await transport.sendMail({
+    const message = {
       to: email,
       from: "filinanatash@gmail.com",
       subject: "Welcome to Contacts Book",
       html: `To confirm your registration click on the <a href="http://localhost:3000/api/users/verify/${user.verificationToken}">link</a>`,
       text: `To confirm your registration, please open the link http://localhost:3000/api/users/verify/${user.verificationToken}`,
-    });
+    };
+    await transport.sendMail(message);
     res.status(200).send({ message: "Verification email sent" });
   } catch (error) {
     next(error);
